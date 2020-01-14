@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>deeplearning image classifier app</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,700&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/61a40f5912.js" crossorigin="anonymous"></script>
+</head>
+<body>  
+<header>
+    <h1>Capstone Project</h1>
+</header> 
+<main>
+    <div class="main-wrapper">
+        
+        <p class="explanation-blurb"></p>
+
+        <div class="wrapper">
+            <div class="panel">
+                <div class="button-container">
+                    <i class="fas fa-image"></i>
+                    <label for="image-selector">To upload an X-ray image </label>
+                    <input id="image-selector" type="file">   
+                </div> 
+                <div class="image-container">
+                    <img class="uploaded-image" id="selected-image" src=""/>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="button-container">
+                    <i class="fas fa-brain"></i>
+                    <button id="predict-button">Predict</button>
+                </div>
+                <p  class="results" style="font-weight:bold">predictions</p>
+                <p  class="results" style="color:#800020;">ELBOW = <span style="color:green"  id="elbow-prediction"></span></p>
+                <p  class="results" style="color:#800020;">FINGER = <span style="color:green"  id="finger-prediction"></span></p>
+                <p  class="results" style="color:#800020;">FOREARM = <span style="color:green"  id="forearm-prediction"></span></p>
+                <p  class="results" style="color:#800020;">HAND = <span style="color:green"  id="hand-prediction"></span></p>
+                <p  class="results" style="color:#800020;">HUMERUS = <span style="color:green"  id="humerus-prediction"></span></p>
+                <p  class="results" style="color:#800020;">SHOULDER = <span style="color:green"  id="shoulder-prediction"></span></p>
+                <p  class="results" style="color:#800020;">WRIST = <span style="color:green"  id="wrist-prediction"></span></p> 
+                <p  class="results" style="color:#800020;">Negative = <span style="color:green"  id="neg-prediction"></span></p>
+                <p  class="results" style="color:#800020;">Positive = <span style="color:green"  id="pos-prediction"></span></p>    
+                <p  class="results" style="color:#800020;">Part detected = <span style="color:green"  id="part-prediction"></span></p>
+                <p  class="results" style="color:#800020;">Abnormality = <span style="color:green"  id="pred-prediction"></span></p> 
+            </div>
+        </div>
+    </div>  
+
+   
+
+
+</main>
+<footer>
+    <p>
+        Dataset provided by The Stanford Machine Learning Group
+    </p>
+    <p>Created By Nixon Alan Lanh &#xa9;</p>
+</footer> 
+
+       
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script>
+        
+        let base64Image;
+        $("#image-selector").change(function() {
+            
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let dataURL = reader.result;
+                $('#selected-image').attr("src", dataURL);
+                base64Image = dataURL.replace("data:image/png;base64,","");
+                console.log(base64Image);
+            }
+            
+            reader.readAsDataURL($("#image-selector")[0].files[0]);
+            $("#elbow-prediction").text("");
+            $("#finger-prediction").text("");
+            $("#forearm-prediction").text("");
+            $("#hand-prediction").text("");
+            $("#humerus-prediction").text("");
+            $("#shoulder-prediction").text("");
+            $("#wrist-prediction").text("");
+            $("#neg-prediction").text("");
+            $("#pos-prediction").text("");     
+            $("#part-prediction").text("");
+            $("#pred-prediction").text("");                     
+        });
+        
+        $("#predict-button").click(function(event){
+            let message = {
+                image: base64Image
+            }
+            
+                console.log(message);
+                
+                $.post("http://127.0.0.1:5000/predict", JSON.stringify(message), function(response){
+                $("#elbow-prediction").text(response.prediction.elbow.toFixed(4));
+                $("#finger-prediction").text(response.prediction.finger.toFixed(4));
+                $("#forearm-prediction").text(response.prediction.forearm.toFixed(4));
+                $("#hand-prediction").text(response.prediction.hand.toFixed(4));
+                $("#humerus-prediction").text(response.prediction.humerus.toFixed(4));
+                $("#shoulder-prediction").text(response.prediction.shoulder.toFixed(4));
+                $("#wrist-prediction").text(response.prediction.wrist.toFixed(4));
+                $("#neg-prediction").text(response.prediction.neg.toFixed(4));
+                $("#pos-prediction").text(response.prediction.pos.toFixed(4)); 
+                $("#part-prediction").text(response.prediction.part);
+                $("#pred-prediction").text(response.prediction.pred);                             
+                console.log(response);
+            });
+            
+        });       
+    </script>
+</body>
+</html>
